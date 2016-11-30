@@ -1,0 +1,51 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class EnemyMovement : MonoBehaviour
+{
+    Transform player;               // Reference to the player's position.
+    PlayerHealth playerHealth;      // Reference to the player's health.
+    EnemyHealth enemyHealth;        // Reference to this enemy's health.
+    NavMeshAgent nav;               // Reference to the nav mesh agent.
+
+
+    void Awake()
+    {
+        // Set up the references.
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        playerHealth = player.GetComponent<PlayerHealth>();
+        enemyHealth = GetComponent<EnemyHealth>();
+        nav = GetComponent<NavMeshAgent>();
+        nav.speed = 0;
+    }
+
+    public float countdown = 0.5f;
+    void Update()
+    {
+        // If the enemy and the player have health left...
+        if (enemyHealth.currentHealth > 0 && playerHealth.currentHealth > 0)
+        {
+            // ... set the destination of the nav mesh agent to the player.
+            nav.SetDestination(player.position);
+            if(Input.GetButtonDown("Vertical1") || Input.GetButtonDown("Vertical2"))
+            {
+                nav.speed = 4;
+            }
+            if (nav.speed == 4)
+            {
+                countdown -= Time.deltaTime;
+                if(countdown <= 0)
+                {
+                    nav.speed = 0;
+                    countdown = 0.5f;
+                }
+            }
+        }
+        // Otherwise...
+        else
+        {
+            // ... disable the nav mesh agent.
+            nav.enabled = false;
+        }
+    }
+}
